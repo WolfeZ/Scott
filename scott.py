@@ -41,13 +41,16 @@ while True:
       irc.send(b'PRIVMSG #test :Nee.\r\n' )
 
     if data.find(b'Scott-test') != -1:
-      time.sleep(2)
       splitted = data.split()
       send_channel = splitted[2]
-      print(send_channel, '\n', splitted)
-      time.sleep(3)
-      irc.send(b'PRIVMSG ' + send_channel, ' :test')
-      
+      decoded = send_channel.decode('utf-8')
+      print(decoded, '\n', splitted)
+      if decoded == 'Scott':
+          continue
+      else:
+          time.sleep(3)
+          sending = irc.send('PRIVMSG {} :test\r\n'.format(decoded).encode('utf-8'))
+          print(sending)
 
 
     print(data)
