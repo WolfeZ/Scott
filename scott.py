@@ -36,20 +36,20 @@ irc.send( b'PRIVMSG #test :Hello World.\r\n')
 while True:
     data = irc.recv(4096)
 
-    if data.startswith(b'PING'):   
+    if data.startswith(b'PING'):
         irc.send(b"PONG " + data.split()[1] + b"\n")
     if data.find( b'!Scott quit' ) != -1:
-      time.sleep(2)
-      irc.send(b'PRIVMSG #test :Nee.\r\n' )
+        time.sleep(2)
+        irc.send(b'PRIVMSG #test :Nee.\r\n' )
 
     if data.find(b'Scott-test') != -1:
-      split_data = data.split()
-      send_channel_encoded = split_data[2]
-      send_channel = send_channel.decode('utf-8')
-      print(send_channel, '\n')
-      time.sleep(3)
-      sending = irc.send('PRIVMSG {} :test\r\n'.format(send_channel).encode('utf-8'))
-      print(sending)
+        split_data = data.split()
+        send_channel_encoded = split_data[2]
+        send_channel = send_channel.decode('utf-8')
+        print(send_channel, '\n')
+        time.sleep(3)
+        sending = irc.send('PRIVMSG {} :test\r\n'.format(send_channel).encode('utf-8'))
+        print(sending)
 
     if data.find(b'http://') != -1:
         split_data = data.split()
