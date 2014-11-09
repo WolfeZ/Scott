@@ -1,5 +1,7 @@
 import socket
 import time
+import urllib.request
+import re
  
 description = '''
 
@@ -41,16 +43,26 @@ while True:
       irc.send(b'PRIVMSG #test :Nee.\r\n' )
 
     if data.find(b'Scott-test') != -1:
-      splitted = data.split()
-      send_channel = splitted[2]
-      decoded = send_channel.decode('utf-8')
-      print(decoded, '\n', splitted)
-      if decoded == 'Scott':
-          continue
-      else:
-          time.sleep(3)
-          sending = irc.send('PRIVMSG {} :test\r\n'.format(decoded).encode('utf-8'))
-          print(sending)
+      split_data = data.split()
+      send_channel_encoded = split_data[2]
+      send_channel = send_channel.decode('utf-8')
+      print(send_channel, '\n')
+      time.sleep(3)
+      sending = irc.send('PRIVMSG {} :test\r\n'.format(send_channel).encode('utf-8'))
+      print(sending)
+
+    if data.find(b'http://') != -1:
+        split_data = data.split()
+        send_channel_encoded = split_data[2]
+        send_channel = send_channel_encoded.decode('utf-8')
+        print(send_channel, '\n')
+        f = urllib.request.urlopen('http://www.python.org')
+        data = f.read(6000)
+        titleRE = re.compile(b"<title>(.+?)</title>")
+        title = titleRE.search(data).group(1)
+        print(title)
+        sending = irc.send('PRIVMSG {} :{}\r\n'.format(send_channel, title).encode('utf-8'))
+        print(sending)
 
 
     print(data)
