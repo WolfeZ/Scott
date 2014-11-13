@@ -2,8 +2,8 @@ import socket
 import time
 import urllib.request
 import re
- 
-description = '''
+
+intro = '''
 
         +=========================================+
 
@@ -20,49 +20,59 @@ description = '''
         +=========================================+
 
 '''
-print(description)
-time.sleep(5)
-network = 'irc.irc-chatters.net'
-port = 6667
+print(intro)
+
 irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-irc.connect((network, port))
-print(irc.recv(4096))
-irc.send( b'NICK Scott\r\n' )
-irc.send( b'USER Scott Scott Scott :Python s\r\n' )
-time.sleep(5)
-irc.send( b'JOIN #test\r\n' )
-time.sleep(5)
-irc.send( b'PRIVMSG #test :Hello World.\r\n')
-while True:
-    data = irc.recv(4096)
-
-    if data.startswith(b'PING'):
-        irc.send(b"PONG " + data.split()[1] + b"\n")
-    if data.find( b'!Scott quit' ) != -1:
-        time.sleep(2)
-        irc.send(b'PRIVMSG #test :Nee.\r\n' )
-
-    if data.find(b'Scott-test') != -1:
-        split_data = data.split()
-        send_channel_encoded = split_data[2]
-        send_channel = send_channel.decode('utf-8')
-        print(send_channel, '\n')
-        time.sleep(3)
-        sending = irc.send('PRIVMSG {} :test\r\n'.format(send_channel).encode('utf-8'))
-        print(sending)
-
-    if data.find(b'http://') != -1:
-        split_data = data.split()
-        send_channel_encoded = split_data[2]
-        send_channel = send_channel_encoded.decode('utf-8')
-        print(send_channel, '\n')
-        f = urllib.request.urlopen('http://www.python.org')
-        data = f.read(6000)
-        titleRE = re.compile(b"<title>(.+?)</title>")
-        title = titleRE.search(data).group(1)
-        print(title)
-        sending = irc.send('PRIVMSG {} :{}\r\n'.format(send_channel, title).encode('utf-8'))
-        print(sending)
+enc = 'utf-8'
+readbuffer = ''
 
 
-    print(data)
+def irc_connect(server='', port=0):
+    while 1:
+        try:
+        
+            port = int(port)
+            irc.connect((server, port))
+            print(irc.recv(1024))
+            break
+        except socket.error:
+            print('Something went wrong...')
+            exit(0)
+
+def irc_join(channel='', nickname=''):
+    while 1:
+        print(irc.recv(1024))
+        
+        try:
+            irc.send('NICK Scott'.encode(enc))
+            irc.send('USER Scott Scott irc.irc-chatters.net :Scott \r\n'.encode(enc))
+            irc.send('JOIN #test'.encode(enc))
+            time.sleep(10)
+            irc.send('PRIVMSG {} :Hello World.\r\n'.format(channel).encode(enc))
+            print(irc.recv(1024))
+            break
+        except socket.error:
+            print('something went wrong..')
+            exit(0)
+
+#def channel(message):
+            
+    
+        
+        
+nickname = 'Scott'
+irc_connect('irc.irc-chatters.net', 6667)
+irc_join('#test', 'Scott')
+
+while 1:
+
+  msg = irc.recv(2048) 
+  msg = msg.strip(b'\n\r')
+  if msg.startswith(b'PING'):
+      msg.send(b"PONG " + data.split()[1] + b"\n")
+  print(msg)
+  break
+
+exit(0)
+
+
